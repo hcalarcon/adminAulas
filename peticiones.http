@@ -1,0 +1,78 @@
+@base = http://localhost:8000
+@user = {{base}}/users
+@aulas = {{base}}/aulas
+
+
+POST http://localhost:8000/users/
+Content-Type: application/json
+
+{
+  "nombre": "pepe",
+  "apellido": "Pérez",
+  "email": "juan12@example.com",
+  "password": "123456",
+  "is_teacher": true
+}
+
+###
+POST {{user}}/login
+Content-Type: application/json
+
+{
+  "email": "juan12@example.com",
+  "password": "123456"
+}
+
+###
+GET {{user}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMCIsImV4cCI6MTc0NjcxNDc5NX0.6QzhM7_UGuLTm7M-UsphfuayXWJOw-aeSWk8Ph4o3VE
+
+###
+GET {{user}}/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMCIsImV4cCI6MTc0Njk0NTU4Nn0.XGk32oDN4Rw8t4gxwafzbXIaf3RCLsJn_9O6-jrPwTw
+
+###
+PUT {{user}}/2
+Content-Type: application/json
+
+{
+  "apellido":"pepe"
+}
+
+###
+DELETE {{user}}/2
+
+
+###
+GET {{aulas}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMCIsImV4cCI6MTc0Njk0NTU4Nn0.XGk32oDN4Rw8t4gxwafzbXIaf3RCLsJn_9O6-jrPwTw
+
+###
+POST  {{aulas}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMCIsImV4cCI6MTc0Njk0NTU4Nn0.XGk32oDN4Rw8t4gxwafzbXIaf3RCLsJn_9O6-jrPwTw
+Content-Type: application/json
+
+{
+  "nombre":"materia de prueba",
+  "ano":5,
+  "division":5,
+  "especialidad": "programacion"
+}
+
+###
+DELETE {{aulas}}/6
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMCIsImV4cCI6MTc0NjcxODYyNn0.4DOQpvTwju0IQ1maMFo0VO-nRKW1xFUShVRLuoZeYkw
+
+
+###
+GET {{aulas}}/13
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMCIsImV4cCI6MTc0Njk0NTU4Nn0.XGk32oDN4Rw8t4gxwafzbXIaf3RCLsJn_9O6-jrPwTw
+
+###
+PUT {{aulas}}/13
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMCIsImV4cCI6MTc0Njk0NTU4Nn0.XGk32oDN4Rw8t4gxwafzbXIaf3RCLsJn_9O6-jrPwTw
+Content-Type: application/json
+
+{
+  "nombre" : "cambio de prueba"
+}

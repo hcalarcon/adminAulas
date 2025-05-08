@@ -1,0 +1,47 @@
+# Entorno virtual
+venv/
+ENV/
+env/
+.venv/
+
+# Archivos de configuración personales
+*.env
+*.env.*
+
+# __pycache__ y archivos compilados
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Archivos de base de datos temporales o locales
+*.sqlite3
+*.db
+
+# Archivos de logs
+*.log
+
+# Archivos generados por alembic
+alembic/versions/*.pyc
+alembic/versions/__pycache__/
+
+# VSCode o editores
+.vscode/
+.idea/
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# Archivos de pruebas
+.coverage
+htmlcov/
+pytest_cache/
+
+# Distribución y empaquetado
+build/
+dist/
+*.egg-info/
