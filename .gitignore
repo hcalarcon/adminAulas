@@ -22,7 +22,7 @@ __pycache__/
 *.log
 
 # Archivos generados por alembic
-alembic/versions/*.pyc
+alembic/versions/*.py
 alembic/versions/__pycache__/
 
 # VSCode o editores
@@ -45,3 +45,6 @@ pytest_cache/
 build/
 dist/
 *.egg-info/
+
+
+*.http

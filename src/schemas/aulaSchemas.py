@@ -14,6 +14,7 @@ class Aula(AulaBase):
     ano: int
     division: int
     especialidad: str
+    profesor_id: int
 
 
 class AulaCreate(Aula):
@@ -36,6 +37,21 @@ class AulaUpdate(Aula):
     ano: Optional[int] = None
     division: Optional[int] = None
     especialidad: Optional[str] = None
+    profesor_id: Optional[int] = None
+
+
+class AsignarProfesor(Aula):
+    id: int
+    nombre: str
+    ano: int
+    division: int
+    especialidad: str
+    profesor_id: int
+
+
+class AlumnosAsignacion(AulaBase):
+
+    alumnos_ids: List[int]
 
 
 class Clase(BaseModel):
