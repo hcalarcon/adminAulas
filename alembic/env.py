@@ -5,10 +5,10 @@ from alembic import context
 import os
 from dotenv import load_dotenv
 from src.database.baseClass import Base
-from src.models.userModel import Usuarios
-from src.models.aulasModel import Aula
-from src.models.asistenciaModel import Asistencia
-from src.models.ClaseModel import Clase
+from src.models.user_model import Usuarios
+from src.models.aulas_model import Aula
+from src.models.asistencia_model import Asistencia
+from src.models.clase_model import Clase
 
 load_dotenv()
 

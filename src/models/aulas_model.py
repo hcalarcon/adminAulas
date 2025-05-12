@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Date, Table
 from sqlalchemy.orm import relationship
 from src.database.baseClass import Base
-from src.models.ClaseModel import Clase
+from src.models.clase_model import Clase
 
 # Tabla intermedia para alumnos en aulas - un alumno puede estar en muchas clases y una clase puede tener muchos alumnos
 alumnos_aulas = Table(

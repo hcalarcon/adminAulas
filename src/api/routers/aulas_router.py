@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 from typing import List
 from src.api.deps import get_db
-from src.schemas import aulaSchemas as aulas_schemas
-from src.crud import aulas as aulas_crud
-from src.schemas import userSchemas as user_schemas
+from src.schemas import aula_schemas as aulas_schemas
+from src.controllers import aulas_controller as aulas_crud
+from src.schemas import user_schemas as user_schemas
 
 router = APIRouter()
 

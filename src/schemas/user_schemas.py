@@ -40,3 +40,8 @@ class LoginRequest(BaseModel):
 
     class Config:
         from_attibutes = True
+
+
+class UserAuth(BaseModel):
+    id: int
+    is_teacher: Optional[bool]

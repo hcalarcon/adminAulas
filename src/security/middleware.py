@@ -3,13 +3,14 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from fastapi import FastAPI
 from src.security import auth
+from src.schemas.user_schemas import UserAuth
 
 # Definimos un esquema de seguridad para OAuth2
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
 # Middleware para validar el token
-async def get_current_user(request: Request):
+async def decode_token_from_request(request: Request):
 
     token = request.headers.get("Authorization")
 
@@ -29,6 +30,7 @@ async def get_current_user(request: Request):
 
         # Extraemos el id del usuario desde el payload
         user_id = payload.get("sub")
+        is_teacher = payload.get("is_teacher")
 
         if user_id is None:
             raise HTTPException(
@@ -37,7 +39,8 @@ async def get_current_user(request: Request):
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
-        return user_id  # Retornar el ID del usuario
+        response = request.state.user = UserAuth(id=user_id, is_teacher=is_teacher)
+        return response
 
     except jwt.ExpiredSignatureError:
         raise HTTPException(

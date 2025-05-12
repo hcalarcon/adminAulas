@@ -3,11 +3,11 @@ from datetime import datetime, timedelta, timezone
 import os
 from dotenv import load_dotenv
 from src.core.config import settings
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from src.security import security
-from src.models.userModel import Usuarios
+from src.models.user_model import Usuarios
 
 
 load_dotenv()
@@ -48,7 +48,8 @@ def login(db: Session, email: str, password: str):
         raise HTTPException(status_code=400, detail="Contra incorrecta")
 
     access_token = create_access_token(
-        data={"sub": str(db_user.id)}, expires_delta=timedelta(minutes=3600)
+        data={"sub": str(db_user.id), "is_teacher": db_user.is_teacher},
+        expires_delta=timedelta(minutes=3600),
     )
 
     return {"access_token": access_token, "token_type": "bearer"}

@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Date, Table
 from sqlalchemy.orm import relationship
 from src.database.baseClass import Base
-from src.models.asistenciaModel import Asistencia
+from src.models.asistencia_model import Asistencia
 
 
 class Clase(Base):

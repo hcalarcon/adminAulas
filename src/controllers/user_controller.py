@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from src.models.userModel import Usuarios
-from src.schemas import userSchemas
+from src.models.user_model import Usuarios
+from src.schemas import user_schemas
 from fastapi import HTTPException
 from src.security import security
 
@@ -9,7 +9,7 @@ def get_user(db: Session):
     return db.query(Usuarios).all()
 
 
-def create_usuario(db: Session, usuario: userSchemas.UsuarioCreate):
+def create_usuario(db: Session, usuario: user_schemas.UsuarioCreate):
     # Verificar si el usuario con ese correo ya existe
     # db_usuario = db.query(Usuarios).filter(Usuarios.email == usuario.email).first()
     db_usuario = existe(db, usuario.email)
@@ -44,7 +44,7 @@ def get_user_by_id(db: Session, id: int):
     return db_user
 
 
-def update_user(db: Session, id: int, usuario: userSchemas.UsuarioUpdate):
+def update_user(db: Session, id: int, usuario: user_schemas.UsuarioUpdate):
     db_user = existe(db, id=id)
     if not db_user:
         raise HTTPException(status_code=400, detail="El usuario no existe")

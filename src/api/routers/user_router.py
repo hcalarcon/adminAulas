@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 from typing import List
 from src.api.deps import get_db
-from src.crud import user as userCrud
-from src.schemas import userSchemas as user_schemas
+from src.controllers import user_controller as userCrud
+from src.schemas import user_schemas as user_schemas
 from src.security.auth import login
 
 router = APIRouter()
@@ -11,7 +11,7 @@ router = APIRouter()
 
 @router.get("/", response_model=List[user_schemas.Usuario])
 def get_users(request: Request, db: Session = Depends(get_db)):
-    user_id = request.state.user_id  # user_id para enviar al controlador
+    # user_id = request.state.user_id  # user_id para enviar al controlador
     return userCrud.get_user(db)
 
 
@@ -22,15 +22,15 @@ def create_users(usuario: user_schemas.UsuarioCreate, db: Session = Depends(get_
 
 @router.get("/me", response_model=user_schemas.Usuario)
 def get_user(request: Request, db: Session = Depends(get_db)):
-    user_id = request.state.user_id
-    return userCrud.get_user_by_id(db, user_id)
+    user = request.state.user
+    return userCrud.get_user_by_id(db, user.id)
 
 
 @router.put("/me", response_model=user_schemas.Usuario)
 def updata_user(
     request: Request, usuario: user_schemas.UsuarioUpdate, db: Session = Depends(get_db)
 ):
-    user_id = request.state.user_id
+    user_id = request.state.user.id
     return userCrud.update_user(db, user_id, usuario=usuario)
 
 

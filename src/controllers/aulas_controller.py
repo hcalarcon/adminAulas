@@ -1,16 +1,16 @@
 from sqlalchemy.orm import Session
-from src.models.aulasModel import Aula
-from src.schemas import aulaSchemas
+from src.models.aulas_model import Aula
+from src.schemas import aula_schemas
 from fastapi import HTTPException
 from src.utility.exist import existe
-from src.models.userModel import Usuarios
+from src.models.user_model import Usuarios
 
 
 def get_aula(db: Session):
     return db.query(Aula).all()
 
 
-def crear_aula(db: Session, aula: aulaSchemas.AulaCreate):
+def crear_aula(db: Session, aula: aula_schemas.AulaCreate):
     nueva_aula = Aula(
         nombre=aula.nombre,
         ano=aula.ano,
@@ -32,7 +32,7 @@ def get_aula_by_id(db: Session, id: int):
     return db_aula
 
 
-def update_aula(db: Session, aula: aulaSchemas.AulaUpdate, id: int):
+def update_aula(db: Session, aula: aula_schemas.AulaUpdate, id: int):
     db_aula = get_aula_by_id(db, id)
 
     if aula.nombre is not None:

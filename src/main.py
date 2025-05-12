@@ -1,9 +1,11 @@
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 from src.core.config import settings
-from src.api.routers import userRouter
-from src.api.routers import aulasRouter
-from src.security.middleware import get_current_user
+from src.api.routers import user_router
+from src.api.routers import aulas_router
+from src.api.routers import clases_router
+from src.api.routers import asistencias_router
+from src.security.middleware import decode_token_from_request
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -23,8 +25,8 @@ async def auth_middleware(request: Request, call_next):
 
     # Para otras rutas, requerir token
     try:
-        user_id = await get_current_user(request)
-        request.state.user_id = user_id
+        user = await decode_token_from_request(request)
+        request.state.user = user
     except HTTPException as e:
         return JSONResponse(status_code=e.status_code, content={"detail": e.detail})
 
@@ -32,5 +34,9 @@ async def auth_middleware(request: Request, call_next):
     return response
 
 
-app.include_router(userRouter.router, prefix="/users", tags=["Usuarios"])
-app.include_router(aulasRouter.router, prefix="/aulas", tags=["Aulas"])
+app.include_router(user_router.router, prefix="/users", tags=["Usuarios"])
+app.include_router(aulas_router.router, prefix="/aulas", tags=["Aulas"])
+app.include_router(clases_router.router, prefix="/clases", tags=["Clases"])
+app.include_router(
+    asistencias_router.router, prefix="/asistencias", tags=["Asistencias"]
+)

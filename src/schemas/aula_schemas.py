@@ -9,12 +9,12 @@ class AulaBase(BaseModel):
 
 
 class Aula(AulaBase):
-
+    id: int
     nombre: str
     ano: int
     division: int
     especialidad: str
-    profesor_id: int
+    profesor_id: Optional[int]
 
 
 class AulaCreate(Aula):
@@ -57,26 +57,3 @@ class AlumnosAsignacion(AulaBase):
 class Clase(BaseModel):
     topic: str
     date: date
-
-
-class SessionCreate(Clase):
-    classroom_id: int
-
-
-class SessionOut(Clase):
-    id: int
-    classroom_id: int
-
-    class Config:
-        from_attibutes = True
-
-
-class Asistencia(BaseModel):
-    student_id: int
-    session_id: int
-    present: bool
-
-
-class AsistenciaOut(Asistencia):
-    class Config:
-        from_attibutes = True
