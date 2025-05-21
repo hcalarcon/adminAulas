@@ -6,15 +6,45 @@ from src.api.routers import aulas_router
 from src.api.routers import clases_router
 from src.api.routers import asistencias_router
 from src.security.middleware import decode_token_from_request
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.PROJECT_VERSION,
 )
 
+origins = [
+    "http://localhost",  # Para pruebas en navegador (ajustar si usas otro puerto)
+    "http://localhost:8081",  # Si usas React en este puerto
+    "http://127.0.0.1",  # También es común usar localhost como 127.0.0.1
+    "exp://127.0.0.1:19000",  # Para Expo (React Native)
+    "https://tu-aplicacion.web.app",  # Si tienes versión desplegada en la web
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Permite los orígenes configurados
+    allow_credentials=True,
+    allow_methods=["*"],  # Permite todos los métodos (GET, POST, etc.)
+    allow_headers=["*"],  # Permite todos los headers
+)
+
 
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
+
+    if request.method == "OPTIONS":
+        return JSONResponse(
+            status_code=200,
+            content={"message": "Preflight passed"},
+            headers={
+                "Access-Control-Allow-Origin": request.headers.get("origin", "*"),
+                "Access-Control-Allow-Headers": "Authorization, Content-Type",
+                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+                "Access-Control-Allow-Credentials": "true",
+            },
+        )
+
     if (
         request.url.path == "/users/login"
         or (request.url.path == "/users/" and request.method == "POST")
@@ -28,7 +58,7 @@ async def auth_middleware(request: Request, call_next):
         user = await decode_token_from_request(request)
         request.state.user = user
     except HTTPException as e:
-        return JSONResponse(status_code=e.status_code, content={"detail": e.detail})
+        raise e
 
     response = await call_next(request)
     return response

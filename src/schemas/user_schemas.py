@@ -9,9 +9,10 @@ class Usuario(BaseModel):
     apellido: str
     email: str
     is_teacher: bool
+    cambiarContrasena: bool
 
     class Config:
-        from_attibutes = True
+        from_attributes = True
 
 
 class UsuarioCreate(BaseModel):
@@ -20,18 +21,21 @@ class UsuarioCreate(BaseModel):
     email: str
     password: str
     is_teacher: bool = False
+    cambiarContrasena: bool = True
 
     class Config:
-        from_attibutes = True
+        from_attributes = True
 
 
 class UsuarioUpdate(BaseModel):
     nombre: Optional[str] = None
     apellido: Optional[str] = None
     email: Optional[str] = None
+    password: Optional[str] = None
+    cambiarContrasena: Optional[bool] = None
 
     class Config:
-        from_attibutes = True
+        from_attributes = True
 
 
 class LoginRequest(BaseModel):
@@ -39,9 +43,17 @@ class LoginRequest(BaseModel):
     password: str
 
     class Config:
-        from_attibutes = True
+        from_attributes = True
 
 
 class UserAuth(BaseModel):
     id: int
     is_teacher: Optional[bool]
+
+
+class LoginOut(BaseModel):
+    user: object
+    access_token: str
+
+    class Config:
+        from_attributes = True

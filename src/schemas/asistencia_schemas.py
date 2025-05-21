@@ -5,7 +5,7 @@ from datetime import date
 
 class AsistenciaBase(BaseModel):
     alumno_id: int
-    presente: int
+    presente: Optional[int]
     justificado: Optional[str]
 
 

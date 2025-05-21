@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from src.api.deps import get_db
@@ -9,9 +9,9 @@ from src.schemas import user_schemas as user_schemas
 router = APIRouter()
 
 
-@router.get("/mis-aulas", response_model=List[aulas_schemas.Aula])
+@router.get("/mis-aulas", response_model=List[aulas_schemas.AulaConCantidadClases])
 def get_mis_aulas(request: Request, db: Session = Depends(get_db)):
-    user_id = request.state.user_id
+    user_id = request.state.user.id
     return aulas_crud.get_aulas_por_profesor(db, user_id)
 
 
@@ -52,6 +52,19 @@ def obtener_alumnos_de_aula(aula_id: int, db: Session = Depends(get_db)):
     return aulas_crud.obtener_alumnos_de_aula(db, aula_id)
 
 
+@router.get(
+    "/mis-aulas-con-alumnos", response_model=List[aulas_schemas.AulaConAlumnosResponse]
+)
+def obtener_mis_aulas_con_alumnos(request: Request, db: Session = Depends(get_db)):
+    user = request.state.user
+    if not user.is_teacher:
+        raise HTTPException(
+            status_code=403, detail="No tienes permiso para ver esta información."
+        )
+
+    return aulas_crud.get_aulas_con_alumnos_por_profesor(db, user.id)
+
+
 @router.get("/", response_model=List[aulas_schemas.Aula])
 def get_aulas(request: Request, db: Session = Depends(get_db)):
     return aulas_crud.get_aula(db)
@@ -69,7 +82,7 @@ def get_aula(id: int, db: Session = Depends(get_db)):
 
 @router.put("/{id}", response_model=aulas_schemas.Aula)
 def update_aula(id: int, aula: aulas_schemas.AulaUpdate, db: Session = Depends(get_db)):
-    return aulas_crud.update_aula(db, aula, id=id)
+    return aulas_crud.update_aula(db, aula, id)
 
 
 @router.delete("/{id}", response_model=aulas_schemas.AulaOut)

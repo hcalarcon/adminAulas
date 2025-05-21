@@ -6,7 +6,7 @@ from src.security import security
 
 
 def get_user(db: Session):
-    return db.query(Usuarios).all()
+    return db.query(Usuarios).order_by(Usuarios.id).all()
 
 
 def create_usuario(db: Session, usuario: user_schemas.UsuarioCreate):
@@ -58,6 +58,12 @@ def update_user(db: Session, id: int, usuario: user_schemas.UsuarioUpdate):
         db_user.apellido = usuario.apellido
     if usuario.email is not None:
         db_user.email = usuario.email
+    if usuario.password is not None:
+        pass_user = security.hash_password(usuario.password)
+        db_user.password = pass_user
+
+    if usuario.cambiarContrasena is not None:
+        db_user.cambiarContrasena = usuario.cambiarContrasena
 
     db.commit()
     db.refresh(db_user)

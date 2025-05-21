@@ -47,7 +47,7 @@ def obtener_clase(db: Session, clase_id: int):
 
 
 def obtener_clases_por_aula(db: Session, aula_id: int):
-    return db.query(Clase).filter(Clase.aula_id == aula_id).all()
+    return db.query(Clase).filter(Clase.aula_id == aula_id).order_by(Clase.fecha).all()
 
 
 # validad el aula

@@ -1,5 +1,5 @@
 # routes/clasesRouter.py
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request, HTTPException
 from sqlalchemy.orm import Session
 from src.api.deps import get_db
 from src.schemas import clases_schemas
@@ -14,7 +14,7 @@ def crear_clases_masivas(
     request: clases_schemas.ClasesMasivasRequest, db: Session = Depends(get_db)
 ):
     return clase_controller.crear_clases_masivas(
-        db, request.aula_id, [clase.dict() for clase in request.clases]
+        db, request.aula_id, [clase.model_dump() for clase in request.clases]
     )
 
 

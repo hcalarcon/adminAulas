@@ -1,4 +1,6 @@
 from passlib.context import CryptContext
+from passlib.exc import UnknownHashError
+from fastapi import HTTPException, status
 
 # Crea el contexto de cifrado con el algoritmo bcrypt
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -11,4 +13,10 @@ def hash_password(password: str) -> str:
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verifica que una contraseña en texto plano coincida con su hash."""
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        return pwd_context.verify(plain_password, hashed_password)
+    except UnknownHashError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La contraseña no está en un formato válido.",
+        )

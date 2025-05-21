@@ -1,11 +1,12 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import date
+from src.schemas.user_schemas import Usuario
 
 
 class AulaBase(BaseModel):
     class Config:
-        from_attibutes = True
+        from_attributes = True
 
 
 class Aula(AulaBase):
@@ -57,3 +58,18 @@ class AlumnosAsignacion(AulaBase):
 class Clase(BaseModel):
     topic: str
     date: date
+
+
+class AulaConCantidadClases(Aula):
+    cantidad_clases: int
+
+
+class AulaConAlumnosResponse(Aula):
+    id: int
+    nombre: str
+    ano: int
+    division: int
+    especialidad: str
+    cantidad_clases: Optional[int]
+    alumnos: List[Usuario]
+    profesor_id: Optional[int]

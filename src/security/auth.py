@@ -40,19 +40,30 @@ def login(db: Session, email: str, password: str):
     db_user = db.query(Usuarios).filter(Usuarios.email == email).first()
 
     if not db_user:
-        raise HTTPException(status_code=400, detail="El correo no existe")
+        raise HTTPException(status_code=422, detail="El correo no existe")
 
     pass_hash = security.verify_password(password, db_user.password)
 
+    print(pass_hash)
     if not pass_hash:
-        raise HTTPException(status_code=400, detail="Contra incorrecta")
+        raise HTTPException(status_code=422, detail="Contra incorrecta")
 
     access_token = create_access_token(
         data={"sub": str(db_user.id), "is_teacher": db_user.is_teacher},
         expires_delta=timedelta(minutes=3600),
     )
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+        "user": {
+            "id": db_user.id,
+            "nombre": db_user.nombre,
+            "apellido": db_user.apellido,
+            "email": db_user.email,
+            "is_teacher": db_user.is_teacher,
+            "cambiarContrasena": db_user.cambiarContrasena,
+        },
+        "access_token": access_token,
+    }
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")

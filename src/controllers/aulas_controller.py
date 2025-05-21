@@ -1,9 +1,12 @@
 from sqlalchemy.orm import Session
 from src.models.aulas_model import Aula
 from src.schemas import aula_schemas
+from src.schemas import user_schemas
 from fastapi import HTTPException
 from src.utility.exist import existe
 from src.models.user_model import Usuarios
+from sqlalchemy import func, case
+from src.models.clase_model import Clase
 
 
 def get_aula(db: Session):
@@ -70,7 +73,31 @@ def asignar_profesor(db: Session, aula_id: int, profesor_id: int):
 
 
 def get_aulas_por_profesor(db: Session, profesor_id: int):
-    return db.query(Aula).filter(Aula.profesor_id == profesor_id).all()
+    resultado = (
+        db.query(
+            Aula,
+            func.count(case((~Clase.tema.ilike("clase %"), 1))).label(
+                "cantidad_clases"
+            ),
+        )
+        .outerjoin(Clase, Aula.id == Clase.aula_id)
+        .filter(Aula.profesor_id == profesor_id)
+        .group_by(Aula.id)
+        .all()
+    )
+
+    return [
+        aula_schemas.AulaConCantidadClases(
+            id=aula.id,
+            nombre=aula.nombre,
+            ano=aula.ano,
+            division=aula.division,
+            especialidad=aula.especialidad,
+            profesor_id=aula.profesor_id,
+            cantidad_clases=cantidad,
+        )
+        for aula, cantidad in resultado
+    ]
 
 
 def remover_profesor(db: Session, aula_id: int, profesor_id: int):
@@ -198,3 +225,35 @@ def eliminar_alumnos_de_aula(db: Session, aula_id: int, alumnos_ids: list):
     db.commit()
     db.refresh(aula)
     return aula
+
+
+def get_aulas_con_alumnos_por_profesor(db: Session, profesor_id: int):
+    aulas = get_aulas_por_profesor(db, profesor_id)
+
+    resultado = []
+    for aula in aulas:
+        alumnos = obtener_alumnos_de_aula(db, aula.id)
+        resultado.append(
+            aula_schemas.AulaConAlumnosResponse(
+                id=aula.id,
+                nombre=aula.nombre,
+                ano=aula.ano,
+                division=aula.division,
+                especialidad=aula.especialidad,
+                profesor_id=aula.profesor_id,
+                cantidad_clases=aula.cantidad_clases,
+                alumnos=[
+                    user_schemas.Usuario(
+                        id=alumno.id,
+                        nombre=alumno.nombre,
+                        apellido=alumno.apellido,
+                        email=alumno.email,
+                        is_teacher=alumno.is_teacher,
+                        cambiarContrasena=alumno.cambiarContrasena,
+                    )
+                    for alumno in alumnos
+                ],
+            )
+        )
+
+    return resultado

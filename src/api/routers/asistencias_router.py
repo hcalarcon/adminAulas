@@ -18,14 +18,23 @@ router = APIRouter()
 
 
 @router.post("/", response_model=AsistenciaOut)
-def crear_asistencia(asistencia: AsistenciaCreate, db: Session = Depends(get_db)):
+def crear_asistencia(
+    request: Request, asistencia: AsistenciaCreate, db: Session = Depends(get_db)
+):
+    if not request.state.user.is_teacher:
+        raise HTTPException(status_code=403, detail="No autorizado")
     return asistencia_controller.registrar_asistencia(db, asistencia)
 
 
 @router.post("/masiva/{clase_id}", response_model=List[AsistenciaOut])
 def crear_asistencias_masivas(
-    clase_id: int, asistencias: List[AsistenciaCreate], db: Session = Depends(get_db)
+    request: Request,
+    clase_id: int,
+    asistencias: List[AsistenciaCreate],
+    db: Session = Depends(get_db),
 ):
+    if not request.state.user.is_teacher:
+        raise HTTPException(status_code=403, detail="No autorizado")
     return asistencia_controller.registrar_asistencias_masivas(
         db, clase_id, asistencias
     )
@@ -37,6 +46,16 @@ def consultar_asistencia_alumno(
 ):
     user = request.state.user
     return asistencia_controller.obtener_asistencias_por_alumno(db, user.id, aula_id)
+
+
+@router.get("/asistencias-por-clase/{clase_id}", response_model=List[AsistenciaBase])
+def get_asistencias_clases(
+    request: Request, clase_id: int, db: Session = Depends(get_db)
+):
+    is_teacher = request.state.user
+    if not is_teacher:
+        raise HTTPException(status_code=401, detail="Usuario no autorizado")
+    return asistencia_controller.obtener_asistencias_por_clase(db, clase_id)
 
 
 @router.get("/alumno/{alumno_id}/{aula_id}", response_model=AsistenciaAlumno)

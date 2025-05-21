@@ -40,6 +40,6 @@ def delete_user(request: Request, db: Session = Depends(get_db)):
     return userCrud.delete_user(db, user_id)
 
 
-@router.post("/login")
+@router.post("/login", response_model=user_schemas.LoginOut)
 def login_user(request: user_schemas.LoginRequest, db: Session = Depends(get_db)):
     return login(db, email=request.email, password=request.password)

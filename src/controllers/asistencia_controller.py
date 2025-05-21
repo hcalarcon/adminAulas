@@ -7,7 +7,7 @@ from src.schemas.asistencia_schemas import (
 from src.models.asistencia_model import Asistencia
 from src.models.clase_model import Clase
 from src.models.user_model import Usuarios as Alumno
-from typing import List
+from typing import List, Dict, Any
 from fastapi import HTTPException
 
 
@@ -52,6 +52,7 @@ def registrar_asistencias_masivas(
                 alumno_id=asistencia_data.alumno_id,
                 clase_id=clase_id,
                 presente=asistencia_data.presente,
+                justificado=asistencia_data.justificado,
             )
             db.add(nueva)
             resultados.append(nueva)
@@ -234,3 +235,34 @@ def calcular_asistencia(asistencias: List[Asistencia], total_clases: int) -> dic
         "tardes": tardes,
         "porcentaje": round(porcentaje, 2),
     }
+
+
+def obtener_asistencias_por_clase(db: Session, clase_id: int) -> List[Dict[str, Any]]:
+    # Obtener la clase
+    clase = db.query(Clase).filter(Clase.id == clase_id).first()
+    if not clase:
+        raise ValueError("Clase no encontrada")
+
+    # Obtener alumnos asignados al aula de esta clase
+    aula = clase.aula
+    alumnos = aula.alumnos  # debe estar definido como relación en el modelo Aula
+
+    # Obtener asistencias ya registradas
+    asistencias_registradas = (
+        db.query(Asistencia).filter(Asistencia.clase_id == clase_id).all()
+    )
+    asistencias_map = {a.alumno_id: a for a in asistencias_registradas}
+
+    # Construir lista final
+    resultado = []
+    for alumno in alumnos:
+        asistencia = asistencias_map.get(alumno.id)
+        resultado.append(
+            {
+                "alumno_id": alumno.id,
+                "presente": asistencia.presente if asistencia else 2,
+                "justificado": asistencia.justificado if asistencia else "no",
+            }
+        )
+
+    return resultado
