@@ -40,12 +40,10 @@ def crear_asistencias_masivas(
     )
 
 
-@router.get("/mis-asistencias/{aula_id}", response_model=AsistenciaAlumno)
-def consultar_asistencia_alumno(
-    request: Request, aula_id: int, db: Session = Depends(get_db)
-):
+@router.get("/mis-asistencias", response_model=List[AsistenciaAlumno])
+def consultar_asistencia_alumno(request: Request, db: Session = Depends(get_db)):
     user = request.state.user
-    return asistencia_controller.obtener_asistencias_por_alumno(db, user.id, aula_id)
+    return asistencia_controller.obtener_asistencias_por_alumno(db, user.id)
 
 
 @router.get("/asistencias-por-clase/{clase_id}", response_model=List[AsistenciaBase])

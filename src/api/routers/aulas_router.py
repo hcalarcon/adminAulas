@@ -9,10 +9,14 @@ from src.schemas import user_schemas as user_schemas
 router = APIRouter()
 
 
-@router.get("/mis-aulas", response_model=List[aulas_schemas.AulaConCantidadClases])
+@router.get(
+    "/mis-aulas",
+)
 def get_mis_aulas(request: Request, db: Session = Depends(get_db)):
-    user_id = request.state.user.id
-    return aulas_crud.get_aulas_por_profesor(db, user_id)
+    user = request.state.user
+    if not user.is_teacher:
+        return aulas_crud.get_aulas_por_alumno(db, user.id)
+    return aulas_crud.get_aulas_por_profesor(db, user.id)
 
 
 @router.put("/remover-profesor/{aula_id}", response_model=aulas_schemas.AulaUpdate)

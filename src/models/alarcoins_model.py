@@ -13,3 +13,6 @@ class Alarcoin(Base):
 
     alumno_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
     alumno = relationship("Usuarios", back_populates="alarcoins")
+
+    aula_id = Column(Integer, ForeignKey("aula.id"), nullable=False)
+    aula = relationship("Aula", back_populates="alarcoins")

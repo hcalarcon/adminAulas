@@ -13,6 +13,35 @@ def get_aula(db: Session):
     return db.query(Aula).all()
 
 
+def get_aulas_por_alumno(db: Session, alumno_id: int):
+    resultado = (
+        db.query(
+            Aula,
+            func.count(case((~Clase.tema.ilike("clases %"), 1))).label(
+                "cantidad_clases"
+            ),
+        )
+        .join(Aula.alumnos)  # relación many-to-many desde Aula hacia Alumno
+        .outerjoin(Clase, Aula.id == Clase.aula_id)
+        .filter(Usuarios.id == alumno_id)
+        .group_by(Aula.id)
+        .all()
+    )
+
+    return [
+        aula_schemas.AulaConCantidadClases(
+            id=aula.id,
+            nombre=aula.nombre,
+            ano=aula.ano,
+            division=aula.division,
+            especialidad=aula.especialidad,
+            profesor_id=aula.profesor_id,
+            cantidad_clases=cantidad,
+        )
+        for aula, cantidad in resultado
+    ]
+
+
 def crear_aula(db: Session, aula: aula_schemas.AulaCreate):
     nueva_aula = Aula(
         nombre=aula.nombre,

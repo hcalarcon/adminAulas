@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Date, Table
 from sqlalchemy.orm import relationship
 from src.database.baseClass import Base
 from src.models.clase_model import Clase
+from src.models.alarcoins_model import Alarcoin
 
 # Tabla intermedia para alumnos en aulas - un alumno puede estar en muchas clases y una clase puede tener muchos alumnos
 alumnos_aulas = Table(
@@ -28,3 +29,4 @@ class Aula(Base):
         "Usuarios", secondary=alumnos_aulas, back_populates="aulas_inscripto"
     )
     clases = relationship("Clase", back_populates="aula")
+    alarcoins = relationship("Alarcoin", back_populates="aula")

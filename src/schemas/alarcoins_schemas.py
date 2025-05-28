@@ -1,21 +1,39 @@
 from pydantic import BaseModel
 from datetime import date
-from typing import Optional
+from typing import Optional, List
 
 
 class AlarcoinBase(BaseModel):
     cantidad: int
     detalle: Optional[str] = None
-    fecha: Optional[date] = None  # Si no se pasa, lo pone el modelo
+    fecha: Optional[date] = None
+    suma: Optional[int] = None
+
+    class Config:
+        from_attributes = True
 
 
 class AlarcoinCreate(AlarcoinBase):
     alumno_id: int
+    aula_id: int
 
 
 class AlarcoinOut(AlarcoinBase):
     id: int
-    alumno_id: int
 
-    class Config:
-        from_attributes = True  # O orm_mode = True si usás Pydantic <2
+
+class AlumnoAlarcoinOut(BaseModel):
+    id: int
+    alarcoins: List[AlarcoinOut]
+
+
+class AulaAlarcoinOut(BaseModel):
+    aula_id: int
+    nombre: str
+    alumnos: List[AlumnoAlarcoinOut]
+
+
+class AulaAlarcoinAlumnoOut(BaseModel):
+    aula_id: int
+    nombre: str
+    alarcoins: List[AlarcoinOut]

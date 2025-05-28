@@ -1,11 +1,11 @@
 from sqlalchemy.orm import Session, joinedload
 from src.schemas.asistencia_schemas import (
     AsistenciaCreate,
-    AsistenciaPorAulaOut,
     AsistenciaPorAula,
 )
 from src.models.asistencia_model import Asistencia
 from src.models.clase_model import Clase
+from src.models.aulas_model import Aula
 from src.models.user_model import Usuarios as Alumno
 from typing import List, Dict, Any
 from fastapi import HTTPException
@@ -80,45 +80,64 @@ def actualizar_asistencia(db: Session, asistencia_data: AsistenciaCreate):
     return asistencia
 
 
-def obtener_asistencias_por_alumno(db: Session, alumno_id: int, aula_id: int):
-    clases = (
-        db.query(Clase).filter(Clase.aula_id == aula_id).order_by(Clase.fecha).all()
-    )
-    clase_ids = [clase.id for clase in clases]
-
-    if not clase_ids:
-        return {"alumno_id": alumno_id, "asistencias": [], "porcentaje_asistencia": 0}
-
-    asistencias = (
-        db.query(Asistencia, Clase)
-        .join(Clase, Asistencia.clase_id == Clase.id)
-        .options(joinedload(Asistencia.clase).joinedload(Clase.aula))
-        .filter(Asistencia.alumno_id == alumno_id, Clase.id.in_(clase_ids))
-        .order_by(Clase.fecha)
+def obtener_asistencias_por_alumno(db: Session, alumno_id: int):
+    # 1. Obtener aulas en las que está inscripto el alumno
+    aulas = (
+        db.query(Aula)
+        .join(Aula.alumnos)  # relación many-to-many desde Aula hacia Alumno
+        .outerjoin(Clase, Aula.id == Clase.aula_id)
+        .filter(Alumno.id == alumno_id)
+        .group_by(Aula.id)
         .all()
     )
 
-    detalle = []
-    asistencias_solas = []
+    resultado = []
 
-    for asistencia, clase in asistencias:
-        detalle.append(
+    for aula in aulas:
+        clases = (
+            db.query(Clase).filter(Clase.aula_id == aula.id).order_by(Clase.fecha).all()
+        )
+        clase_ids = [clase.id for clase in clases]
+
+        if not clase_ids:
+            continue
+
+        asistencias = (
+            db.query(Asistencia, Clase)
+            .join(Clase, Asistencia.clase_id == Clase.id)
+            .options(joinedload(Asistencia.clase).joinedload(Clase.aula))
+            .filter(Asistencia.alumno_id == alumno_id, Clase.id.in_(clase_ids))
+            .order_by(Clase.fecha)
+            .all()
+        )
+
+        detalle = []
+        asistencias_solas = []
+
+        for asistencia, clase in asistencias:
+            detalle.append(
+                {
+                    "id": clase.id,
+                    "fecha": clase.fecha,
+                    "clase_nombre": clase.tema,  # o clase.aula.nombre
+                    "presente": asistencia.presente,
+                    "justificado": asistencia.justificado,
+                }
+            )
+            asistencias_solas.append(asistencia)
+
+        resumen = calcular_asistencia(asistencias_solas, len(clase_ids))
+
+        resultado.append(
             {
-                "fecha": clase.fecha,
-                "clase_nombre": clase.aula.nombre,
-                "presente": asistencia.presente,
-                "justificado": asistencia.justificado,
+                "aula_id": aula.id,
+                "materia": aula.nombre,
+                "porcentaje_asistencia": resumen["porcentaje"],
+                "asistencias": detalle,
             }
         )
-        asistencias_solas.append(asistencia)
 
-    resumen = calcular_asistencia(asistencias_solas, len(clase_ids))
-
-    return {
-        "alumno_id": alumno_id,
-        "asistencias": detalle,
-        "porcentaje_asistencia": resumen["porcentaje"],
-    }
+    return resultado
 
 
 def obtener_asistencias_por_alumno_y_aula(db: Session, alumno_id: int, aula_id: int):
@@ -222,7 +241,7 @@ def calcular_asistencia(asistencias: List[Asistencia], total_clases: int) -> dic
         elif asistencia.presente == 3:
             tardes += 1
 
-    faltas_equivalentes = ausentes + (tardes // 3)
+    faltas_equivalentes = ausentes + (tardes / 3)
     porcentaje = (
         ((total_clases - faltas_equivalentes) / total_clases) * 100
         if total_clases > 0

@@ -40,13 +40,12 @@ def login(db: Session, email: str, password: str):
     db_user = db.query(Usuarios).filter(Usuarios.email == email).first()
 
     if not db_user:
-        raise HTTPException(status_code=422, detail="El correo no existe")
+        raise HTTPException(status_code=401, detail="El correo no existe")
 
     pass_hash = security.verify_password(password, db_user.password)
 
-    print(pass_hash)
     if not pass_hash:
-        raise HTTPException(status_code=422, detail="Contra incorrecta")
+        raise HTTPException(status_code=400, detail="Contra incorrecta")
 
     access_token = create_access_token(
         data={"sub": str(db_user.id), "is_teacher": db_user.is_teacher},
@@ -67,19 +66,3 @@ def login(db: Session, email: str, password: str):
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
-
-
-# def get_current_user(token: str = Depends(oauth2_scheme)):
-#     credentials_exception = HTTPException(
-#         status_code=status.HTTP_401_UNAUTHORIZED,
-#         detail="Token inválido o expirado",
-#         headers={"WWW-Authenticate": "Bearer"},
-#     )
-#     try:
-#         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-#         user_id: int = payload.get("sub")
-#         if user_id is None:
-#             raise credentials_exception
-#         return user_id
-#     except JWTError:
-#         raise credentials_exception

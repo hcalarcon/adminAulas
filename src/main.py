@@ -5,6 +5,7 @@ from src.api.routers import user_router
 from src.api.routers import aulas_router
 from src.api.routers import clases_router
 from src.api.routers import asistencias_router
+from src.api.routers import alarcoins_router
 from src.security.middleware import decode_token_from_request
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -15,9 +16,9 @@ app = FastAPI(
 
 origins = [
     "http://localhost",  # Para pruebas en navegador (ajustar si usas otro puerto)
-    "http://localhost:8081",  # Si usas React en este puerto
+    "http://localhost:8081",
+    "http://localhost:8082",  # Si usas React en este puerto
     "http://127.0.0.1",  # También es común usar localhost como 127.0.0.1
-    "exp://127.0.0.1:19000",  # Para Expo (React Native)
     "https://tu-aplicacion.web.app",  # Si tienes versión desplegada en la web
 ]
 
@@ -58,7 +59,7 @@ async def auth_middleware(request: Request, call_next):
         user = await decode_token_from_request(request)
         request.state.user = user
     except HTTPException as e:
-        raise e
+        return JSONResponse(status_code=401, content={"detail": e.detail})
 
     response = await call_next(request)
     return response
@@ -70,3 +71,4 @@ app.include_router(clases_router.router, prefix="/clases", tags=["Clases"])
 app.include_router(
     asistencias_router.router, prefix="/asistencias", tags=["Asistencias"]
 )
+app.include_router(alarcoins_router.router, prefix="/alarcoins", tags=["Alarcoins"])

@@ -70,6 +70,6 @@ class AulaConAlumnosResponse(Aula):
     ano: int
     division: int
     especialidad: str
-    cantidad_clases: Optional[int]
-    alumnos: List[Usuario]
-    profesor_id: Optional[int]
+    cantidad_clases: Optional[int] = None
+    alumnos: List[Usuario] = None
+    profesor_id: Optional[int] = None

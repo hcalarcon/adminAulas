@@ -49,6 +49,7 @@ class AsistenciasAulaResumenOut(BaseModel):
 
 
 class AsistenciaDetalle(BaseModel):
+    id: int
     fecha: date
     clase_nombre: str
     presente: int
@@ -56,6 +57,7 @@ class AsistenciaDetalle(BaseModel):
 
 
 class AsistenciaAlumno(BaseModel):
-    alumno_id: int
-    asistencias: List[AsistenciaDetalle]
+    aula_id: int
+    materia: str
     porcentaje_asistencia: float
+    asistencias: List[AsistenciaDetalle]
