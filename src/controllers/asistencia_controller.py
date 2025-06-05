@@ -126,7 +126,7 @@ def obtener_asistencias_por_alumno(db: Session, alumno_id: int):
             )
             asistencias_solas.append(asistencia)
 
-        resumen = calcular_asistencia(asistencias_solas, len(clase_ids))
+        resumen = calcular_asistencia(asistencias_solas)
 
         resultado.append(
             {
@@ -230,10 +230,15 @@ def obtener_asistencias_por_aula(db: Session, aula_id: int) -> List[AsistenciaPo
     }
 
 
-def calcular_asistencia(asistencias: List[Asistencia], total_clases: int) -> dict:
-    presentes = ausentes = tardes = 0
+def calcular_asistencia(asistencias: List[Asistencia]) -> dict:
+    presentes = ausentes = tardes = total_clases = 0
 
     for asistencia in asistencias:
+        if asistencia.presente == 0:
+            continue  # Ignorar si no corresponde
+
+        total_clases += 1
+
         if asistencia.presente == 1:
             presentes += 1
         elif asistencia.presente == 2:
@@ -241,12 +246,12 @@ def calcular_asistencia(asistencias: List[Asistencia], total_clases: int) -> dic
         elif asistencia.presente == 3:
             tardes += 1
 
-    faltas_equivalentes = ausentes + (tardes / 3)
-    porcentaje = (
-        ((total_clases - faltas_equivalentes) / total_clases) * 100
-        if total_clases > 0
-        else 0
-    )
+        faltas_equivalentes = ausentes + (tardes / 3)
+        porcentaje = (
+            ((total_clases - faltas_equivalentes) / total_clases) * 100
+            if total_clases > 0
+            else 0
+        )
 
     return {
         "presentes": presentes,
@@ -279,7 +284,7 @@ def obtener_asistencias_por_clase(db: Session, clase_id: int) -> List[Dict[str, 
         resultado.append(
             {
                 "alumno_id": alumno.id,
-                "presente": asistencia.presente if asistencia else 2,
+                "presente": asistencia.presente if asistencia else 1,
                 "justificado": asistencia.justificado if asistencia else "no",
             }
         )

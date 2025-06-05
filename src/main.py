@@ -8,15 +8,25 @@ from src.api.routers import asistencias_router
 from src.api.routers import alarcoins_router
 from src.security.middleware import decode_token_from_request
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+
+from src.core.limiter import limiter
+
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.PROJECT_VERSION,
 )
 
+# rate limit
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# origenes permitidos
 origins = [
     "http://localhost",  # Para pruebas en navegador (ajustar si usas otro puerto)
-    "http://localhost:8081",
+    "http://localhost:3000",
     "http://localhost:8082",  # Si usas React en este puerto
     "http://127.0.0.1",  # También es común usar localhost como 127.0.0.1
     "https://tu-aplicacion.web.app",  # Si tienes versión desplegada en la web
@@ -53,6 +63,12 @@ async def auth_middleware(request: Request, call_next):
         or request.url.path == "/openapi.json"
     ):
         return await call_next(request)
+
+    api_key = request.headers.get("x-api-key")
+    if api_key != settings.API_KEY:
+        return JSONResponse(
+            status_code=403, content={"detail": "API Key inválida o ausente"}
+        )
 
     # Para otras rutas, requerir token
     try:
