@@ -52,17 +52,20 @@ app.add_middleware(
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
 
+    # if request.method == "OPTIONS":
+    #     return JSONResponse(
+    #         status_code=200,
+    #         content={"message": "Preflight passed"},
+    #         headers={
+    #             "Access-Control-Allow-Origin": request.headers.get("origin", "*"),
+    #             "Access-Control-Allow-Headers": "Authorization, Content-Type",
+    #             "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    #             "Access-Control-Allow-Credentials": "true",
+    #         },
+    #     )
+
     if request.method == "OPTIONS":
-        return JSONResponse(
-            status_code=200,
-            content={"message": "Preflight passed"},
-            headers={
-                "Access-Control-Allow-Origin": request.headers.get("origin", "*"),
-                "Access-Control-Allow-Headers": "Authorization, Content-Type",
-                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-                "Access-Control-Allow-Credentials": "true",
-            },
-        )
+        return await call_next(request)
 
     if (
         request.url.path == "/users/login"
