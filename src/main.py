@@ -37,7 +37,15 @@ app.add_middleware(
     allow_origins=origins,  # Permite los orígenes configurados
     allow_credentials=True,
     allow_methods=["*"],  # Permite todos los métodos (GET, POST, etc.)
-    allow_headers=["*"],  # Permite todos los headers
+    allow_headers=[
+        "x-api-key",  # ← agregalo explícitamente
+        "Authorization",
+        "Content-Type",
+        "Accept",
+        "Origin",
+        "User-Agent",
+        "X-Requested-With",
+    ],  # Permite todos los headers
 )
 
 
