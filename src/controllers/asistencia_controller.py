@@ -246,12 +246,12 @@ def calcular_asistencia(asistencias: List[Asistencia]) -> dict:
         elif asistencia.presente == 3:
             tardes += 1
 
-        faltas_equivalentes = ausentes + (tardes / 3)
-        porcentaje = (
-            ((total_clases - faltas_equivalentes) / total_clases) * 100
-            if total_clases > 0
-            else 0
-        )
+    faltas_equivalentes = ausentes + (tardes / 3)
+    porcentaje = (
+        ((total_clases - faltas_equivalentes) / total_clases) * 100
+        if total_clases > 0
+        else 0
+    )
 
     return {
         "presentes": presentes,
