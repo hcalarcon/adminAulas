@@ -49,5 +49,9 @@ def delete_user(request: Request, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=user_schemas.LoginOut)
 @limiter.limit("5/minute")  # Más estricto para proteger contra fuerza bruta
-def login_user(request: user_schemas.LoginRequest, db: Session = Depends(get_db)):
-    return login(db, email=request.email, password=request.password)
+def login_user(
+    request: Request,
+    login_data: user_schemas.LoginRequest,
+    db: Session = Depends(get_db),
+):
+    return login(db, email=login_data.email, password=login_data.password)
