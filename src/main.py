@@ -25,11 +25,8 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # origenes permitidos
 origins = [
-    "http://localhost",  # Para pruebas en navegador (ajustar si usas otro puerto)
-    "http://localhost:3000",
-    "http://localhost:8082",  # Si usas React en este puerto
-    "http://127.0.0.1",  # También es común usar localhost como 127.0.0.1
-    "https://tu-aplicacion.web.app",  # Si tienes versión desplegada en la web
+    # También es común usar localhost como 127.0.0.1
+    "https://admin-aulas-web.vercel.app",  # Si tienes versión desplegada en la web
 ]
 
 app.add_middleware(
