@@ -52,7 +52,7 @@ class UserAuth(BaseModel):
 
 
 class LoginOut(BaseModel):
-    user: object
+    user: Usuario
     access_token: str
 
     class Config:
