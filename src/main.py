@@ -49,20 +49,20 @@ app.add_middleware(
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
 
-    # if request.method == "OPTIONS":
-    #     return JSONResponse(
-    #         status_code=200,
-    #         content={"message": "Preflight passed"},
-    #         headers={
-    #             "Access-Control-Allow-Origin": request.headers.get("origin", "*"),
-    #             "Access-Control-Allow-Headers": "Authorization, Content-Type",
-    #             "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-    #             "Access-Control-Allow-Credentials": "true",
-    #         },
-    #     )
-
     if request.method == "OPTIONS":
-        return await call_next(request)
+        return JSONResponse(
+            status_code=200,
+            content={"message": "Preflight passed"},
+            headers={
+                "Access-Control-Allow-Origin": request.headers.get("origin", "*"),
+                "Access-Control-Allow-Headers": "Authorization, Content-Type",
+                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+                "Access-Control-Allow-Credentials": "true",
+            },
+        )
+
+    # if request.method == "OPTIONS":
+    #     return await call_next(request)
 
     if (
         request.url.path == "/users/login"
@@ -72,11 +72,11 @@ async def auth_middleware(request: Request, call_next):
     ):
         return await call_next(request)
 
-    api_key = request.headers.get("x-api-key")
-    if api_key != settings.API_KEY:
-        return JSONResponse(
-            status_code=403, content={"detail": "API Key inválida o ausente"}
-        )
+    # api_key = request.headers.get("x-api-key")
+    # if api_key != settings.API_KEY:
+    #     return JSONResponse(
+    #         status_code=403, content={"detail": "API Key inválida o ausente"}
+    #     )
 
     # Para otras rutas, requerir token
     try:
