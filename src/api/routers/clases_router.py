@@ -28,9 +28,6 @@ def crear_clases_masivas(
 @router.get("/aulas/{aula_id}/clases", response_model=List[clases_schemas.ClaseOut])
 @limiter.limit("30/minute")
 def get_clases_por_aula(aula_id: int, request: Request, db: Session = Depends(get_db)):
-    user = request.state.user
-    if not user.is_teacher:
-        raise HTTPException(status_code=403, detail="Solo disponible para profesores")
 
     return clase_controller.obtener_clases_por_aula(db, aula_id)
 
