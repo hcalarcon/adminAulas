@@ -9,6 +9,7 @@ class Usuario(BaseModel):
     apellido: str
     email: str
     is_teacher: bool
+    grupo_id: Optional[int] = None
     cambiarContrasena: bool
 
     class Config:
@@ -33,6 +34,7 @@ class UsuarioUpdate(BaseModel):
     email: Optional[str] = None
     password: Optional[str] = None
     cambiarContrasena: Optional[bool] = None
+    grupo_id: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -54,6 +56,20 @@ class UserAuth(BaseModel):
 class LoginOut(BaseModel):
     user: Usuario
     access_token: str
+
+    class Config:
+        from_attributes = True
+
+
+class UsuarioConGrupo(BaseModel):
+    id: int
+    nombre: str
+    apellido: str
+    email: str
+    is_teacher: bool
+    cambiarContrasena: bool
+    grupo_id: Optional[int]
+    grupo_nombre: Optional[str]
 
     class Config:
         from_attributes = True

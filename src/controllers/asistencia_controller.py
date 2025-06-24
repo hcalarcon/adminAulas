@@ -267,9 +267,15 @@ def obtener_asistencias_por_clase(db: Session, clase_id: int) -> List[Dict[str, 
     if not clase:
         raise ValueError("Clase no encontrada")
 
-    # Obtener alumnos asignados al aula de esta clase
     aula = clase.aula
-    alumnos = aula.alumnos  # debe estar definido como relación en el modelo Aula
+    grupo_id = clase.grupo_id
+
+    if grupo_id:
+        # Es un taller, filtrar solo alumnos del grupo
+        alumnos = db.query(Alumno).filter(Alumno.grupo_id == grupo_id).all()
+    else:
+        # Es una materia común (teoría), traer todos los del aula
+        alumnos = aula.alumnos
 
     # Obtener asistencias ya registradas
     asistencias_registradas = (
@@ -288,5 +294,4 @@ def obtener_asistencias_por_clase(db: Session, clase_id: int) -> List[Dict[str, 
                 "justificado": asistencia.justificado if asistencia else "no",
             }
         )
-
     return resultado

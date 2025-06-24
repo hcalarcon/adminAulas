@@ -5,8 +5,9 @@ from src.schemas import user_schemas
 from fastapi import HTTPException
 from src.utility.exist import existe
 from src.models.user_model import Usuarios
-from sqlalchemy import func, case
+from sqlalchemy import func, case, or_
 from src.models.clase_model import Clase
+from src.models.grupos_model import Grupos
 
 
 def get_aula(db: Session):
@@ -14,6 +15,21 @@ def get_aula(db: Session):
 
 
 def get_aulas_por_alumno(db: Session, alumno_id: int):
+    # Subquery: aulas por alumnos (teoría, directamente)
+    subq_directas = (
+        db.query(Aula.id).join(Aula.alumnos).filter(Usuarios.id == alumno_id).subquery()
+    )
+
+    # Subquery: aulas por grupo (taller, indirectamente)
+    subq_grupo = (
+        db.query(Aula.id)
+        .join(Aula.grupos)
+        .join(Grupos.alumnos)
+        .filter(Usuarios.id == alumno_id)
+        .subquery()
+    )
+
+    # Unir ambas fuentes de aula
     resultado = (
         db.query(
             Aula,
@@ -21,9 +37,8 @@ def get_aulas_por_alumno(db: Session, alumno_id: int):
                 "cantidad_clases"
             ),
         )
-        .join(Aula.alumnos)  # relación many-to-many desde Aula hacia Alumno
         .outerjoin(Clase, Aula.id == Clase.aula_id)
-        .filter(Usuarios.id == alumno_id)
+        .filter(or_(Aula.id.in_(subq_directas), Aula.id.in_(subq_grupo)))
         .group_by(Aula.id)
         .all()
     )
@@ -37,6 +52,7 @@ def get_aulas_por_alumno(db: Session, alumno_id: int):
             especialidad=aula.especialidad,
             profesor_id=aula.profesor_id,
             cantidad_clases=cantidad,
+            tipo=aula.tipo,
         )
         for aula, cantidad in resultado
     ]
@@ -124,6 +140,7 @@ def get_aulas_por_profesor(db: Session, profesor_id: int):
             especialidad=aula.especialidad,
             profesor_id=aula.profesor_id,
             cantidad_clases=cantidad,
+            tipo=aula.tipo,
         )
         for aula, cantidad in resultado
     ]
@@ -134,8 +151,6 @@ def remover_profesor(db: Session, aula_id: int, profesor_id: int):
 
     if not aula:
         raise HTTPException(status_code=404, detail="Aula no encontrada")
-
-    print(f"DEBUG -> aula.profesor_id: {aula.profesor_id}, user: {profesor_id}")
 
     if aula.profesor_id != int(profesor_id):
         raise HTTPException(
@@ -203,14 +218,6 @@ def asignar_alumnos_a_aula(db: Session, aula_id: int, alumnos_ids: list):
     return aula
 
 
-def obtener_alumnos_de_aula(db: Session, aula_id: int):
-    aula = db.query(Aula).filter(Aula.id == aula_id).first()
-    if not aula:
-        raise HTTPException(status_code=404, detail="Aula no encontrada")
-
-    return aula.alumnos
-
-
 # Eliminar un alumno de un aula
 def eliminar_alumno_de_aula(db: Session, aula_id: int, alumno_id: int):
     # Verifica que el aula exista
@@ -257,11 +264,14 @@ def eliminar_alumnos_de_aula(db: Session, aula_id: int, alumnos_ids: list):
 
 
 def get_aulas_con_alumnos_por_profesor(db: Session, profesor_id: int):
+
     aulas = get_aulas_por_profesor(db, profesor_id)
 
     resultado = []
+
     for aula in aulas:
-        alumnos = obtener_alumnos_de_aula(db, aula.id)
+        alumnos_con_grupo = obtener_alumnos_de_aula(db, aula.id)
+
         resultado.append(
             aula_schemas.AulaConAlumnosResponse(
                 id=aula.id,
@@ -270,19 +280,46 @@ def get_aulas_con_alumnos_por_profesor(db: Session, profesor_id: int):
                 division=aula.division,
                 especialidad=aula.especialidad,
                 profesor_id=aula.profesor_id,
-                cantidad_clases=aula.cantidad_clases,
+                cantidad_clases=getattr(aula, "cantidad_clases", 0),
+                tipo=aula.tipo,
                 alumnos=[
-                    user_schemas.Usuario(
+                    user_schemas.UsuarioConGrupo(
                         id=alumno.id,
                         nombre=alumno.nombre,
                         apellido=alumno.apellido,
                         email=alumno.email,
                         is_teacher=alumno.is_teacher,
                         cambiarContrasena=alumno.cambiarContrasena,
+                        grupo_id=alumno.grupo_id,
+                        grupo_nombre=nombre_grupo,
                     )
-                    for alumno in alumnos
+                    for alumno, nombre_grupo in alumnos_con_grupo
                 ],
             )
         )
 
     return resultado
+
+
+def obtener_alumnos_de_aula(db: Session, aula_id: int):
+    aula = db.query(Aula).filter(Aula.id == aula_id).first()
+    if not aula:
+        raise HTTPException(status_code=404, detail="Aula no encontrada")
+
+    if aula.tipo == "taller":
+        # Reunimos alumnos desde los grupos asociados al aula
+        alumnos = []
+        for grupo in aula.grupos:
+            for alumno in grupo.alumnos:
+                alumnos.append((alumno, grupo.nombre))
+
+    else:
+        # Aulas de teoría: los alumnos están directamente vinculados
+        alumnos = [(alumno, None) for alumno in aula.alumnos]
+
+    # Evitamos duplicados por ID (por si el mismo alumno está en más de un grupo por error)
+    alumnos_dict = {}
+    for alumno, grupo_nombre in alumnos:
+        alumnos_dict[alumno.id] = (alumno, grupo_nombre)
+
+    return list(alumnos_dict.values())

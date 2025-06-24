@@ -28,8 +28,11 @@ def crear_clases_masivas(
 @router.get("/aulas/{aula_id}/clases", response_model=List[clases_schemas.ClaseOut])
 @limiter.limit("30/minute")
 def get_clases_por_aula(aula_id: int, request: Request, db: Session = Depends(get_db)):
+    user = request.state.user
+    if user.is_teacher:
+        return clase_controller.obtener_clases_por_aula(db, aula_id)
 
-    return clase_controller.obtener_clases_por_aula(db, aula_id)
+    return clase_controller.obtener_clases_para_alumno(db, user.id, aula_id)
 
 
 @router.post("/", response_model=clases_schemas.ClaseOut)

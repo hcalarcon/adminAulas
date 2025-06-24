@@ -25,6 +25,8 @@ class ClaseOut(Clase):
     id: int
     fecha: date
     aula_id: int
+    grupo_id: Optional[int] = None
+    cuatrimestre: int
 
 
 class ClaseUpdate(Clase):
@@ -36,6 +38,8 @@ class ClaseUpdate(Clase):
 class ClaseMasivaCreate(BaseModel):
     tema: str
     fecha: date
+    grupo_id: Optional[int] = None
+    cuatrimestre: int
 
 
 class ClasesMasivasRequest(BaseModel):

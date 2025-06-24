@@ -16,6 +16,7 @@ class Aula(AulaBase):
     division: int
     especialidad: str
     profesor_id: Optional[int]
+    tipo: str
 
 
 class AulaCreate(Aula):
@@ -23,6 +24,8 @@ class AulaCreate(Aula):
     ano: int
     division: int
     especialidad: str
+    tipo: str
+    profesor_id: Optional[int] = None
 
 
 class AulaOut(Aula):
@@ -31,6 +34,8 @@ class AulaOut(Aula):
     ano: int
     division: int
     especialidad: str
+    profesor_id: Optional[int] = None
+    tipo: str
 
 
 class AulaUpdate(Aula):

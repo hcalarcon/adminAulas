@@ -5,7 +5,8 @@ from src.api.routers import user_router
 from src.api.routers import aulas_router
 from src.api.routers import clases_router
 from src.api.routers import asistencias_router
-from src.api.routers import alarcoins_router
+from src.api.routers import epetcoins_router
+from src.api.routers import grupos_router
 from src.security.middleware import decode_token_from_request
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
@@ -27,6 +28,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 origins = [
     # También es común usar localhost como 127.0.0.1
     "https://admin-aulas-web.vercel.app",  # Si tienes versión desplegada en la web
+    "http://localhost:8081",
 ]
 
 app.add_middleware(
@@ -61,9 +63,6 @@ async def auth_middleware(request: Request, call_next):
             },
         )
 
-    # if request.method == "OPTIONS":
-    #     return await call_next(request)
-
     if (
         request.url.path == "/users/login"
         or (request.url.path == "/users/" and request.method == "POST")
@@ -95,4 +94,5 @@ app.include_router(clases_router.router, prefix="/clases", tags=["Clases"])
 app.include_router(
     asistencias_router.router, prefix="/asistencias", tags=["Asistencias"]
 )
-app.include_router(alarcoins_router.router, prefix="/alarcoins", tags=["Alarcoins"])
+app.include_router(epetcoins_router.router, prefix="/epetcoins", tags=["epetcoins"])
+app.include_router(grupos_router.router, prefix="/grupos", tags=["Grupos"])

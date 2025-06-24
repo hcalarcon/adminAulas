@@ -3,7 +3,6 @@ from src.schemas.asistencia_schemas import (
     AsistenciaCreate,
     AsistenciaOut,
     AsistenciaBase,
-    AsistenciaPorAula,
     AsistenciasAulaResumenOut,
     AsistenciaAlumno,
 )
