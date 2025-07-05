@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 from typing import List
 from src.api.deps import get_db
-from src.controllers import user_controller as userCrud
-from src.schemas import user_schemas as user_schemas
+from src.modules.usuarios import user_controller as userCrud
+from src.modules.usuarios import user_schemas as user_schemas
 from src.security.auth import login
 from src.core.limiter import limiter
 

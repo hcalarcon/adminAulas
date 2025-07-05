@@ -1,13 +1,13 @@
 from sqlalchemy.orm import Session
-from src.models.aulas_model import Aula
-from src.schemas import aula_schemas
-from src.schemas import user_schemas
+from src.modules.aula.aulas_model import Aula
+from src.modules.aula import aula_schemas
+from src.modules.usuarios import user_schemas
 from fastapi import HTTPException
 from src.utility.exist import existe
-from src.models.user_model import Usuarios
+from src.modules.usuarios.user_model import Usuarios
 from sqlalchemy import func, case, or_
-from src.models.clase_model import Clase
-from src.models.grupos_model import Grupos
+from src.modules.clase.clase_model import Clase
+from src.modules.grupos.grupos_model import Grupos
 
 
 def get_aula(db: Session):

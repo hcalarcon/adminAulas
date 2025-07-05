@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, Request, HTTPException
 from sqlalchemy.orm import Session
 from src.api.deps import get_db
-from src.controllers import grupos_controller
-from src.schemas import grupos_schemas
+from src.modules.grupos import grupos_controller
+from src.modules.grupos import grupos_schemas
 from src.security.auth import login
 from src.core.limiter import limiter
 

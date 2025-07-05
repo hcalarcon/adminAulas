@@ -1,12 +1,12 @@
 from sqlalchemy.orm import Session, joinedload
-from src.schemas.asistencia_schemas import (
+from src.modules.asistencia.asistencia_schemas import (
     AsistenciaCreate,
     AsistenciaPorAula,
 )
-from src.models.asistencia_model import Asistencia
-from src.models.clase_model import Clase
-from src.models.aulas_model import Aula
-from src.models.user_model import Usuarios as Alumno
+from src.modules.asistencia.asistencia_model import Asistencia
+from src.modules.clase.clase_model import Clase
+from src.modules.aula.aulas_model import Aula
+from src.modules.usuarios.user_model import Usuarios as Alumno
 from typing import List, Dict, Any
 from fastapi import HTTPException
 

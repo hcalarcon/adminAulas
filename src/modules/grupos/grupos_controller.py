@@ -1,9 +1,9 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from src.models.grupos_model import Grupos
-from src.models.user_model import Usuarios
-from src.schemas import grupos_schemas
-from src.models.aulas_model import Aula
+from src.modules.grupos.grupos_model import Grupos
+from src.modules.usuarios.user_model import Usuarios
+from src.modules.grupos import grupos_schemas
+from src.modules.aula.aulas_model import Aula
 
 
 def crear_grupo(db: Session, datos: grupos_schemas.GrupoCreate):

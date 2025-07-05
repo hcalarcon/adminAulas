@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, Request, HTTPException
 from sqlalchemy.orm import Session
 from src.api.deps import get_db
-from src.schemas import clases_schemas
-from src.controllers import clase_controller
+from src.modules.clase import clases_schemas
+from src.modules.clase import clase_controller
 from typing import List
 from src.core.limiter import limiter  # Asegurate de importar bien el limiter
 

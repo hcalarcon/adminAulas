@@ -1,8 +1,8 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from src.models.clase_model import Clase
-from src.models.user_model import Usuarios
-from src.schemas.clases_schemas import ClaseCreate, ClaseUpdate
+from src.modules.clase.clase_model import Clase
+from src.modules.usuarios.user_model import Usuarios
+from src.modules.clase.clases_schemas import ClaseCreate, ClaseUpdate
 from typing import List
 
 

@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Date, Table
 from sqlalchemy.orm import relationship
 from src.database.baseClass import Base
-from src.models.clase_model import Clase
-from src.models.epetcoin_model import TransaccionCoin, EpetCoin
+from src.modules.epetcoins.epetcoin_model import TransaccionCoin, EpetCoin
+
 
 # Tabla intermedia para alumnos en aulas - un alumno puede estar en muchas clases y una clase puede tener muchos alumnos
 alumnos_aulas = Table(
@@ -34,3 +34,4 @@ class Aula(Base):
     clases = relationship("Clase", back_populates="aula")
     transacciones_coin = relationship("TransaccionCoin", back_populates="aula")
     grupos = relationship("Grupos", secondary="grupos_aulas", back_populates="aulas")
+    tareas = relationship("Tarea", back_populates="aula")

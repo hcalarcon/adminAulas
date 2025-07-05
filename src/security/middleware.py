@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from fastapi import FastAPI
 from src.security import auth
-from src.schemas.user_schemas import UserAuth
+from src.modules.usuarios.user_schemas import UserAuth
 
 # Definimos un esquema de seguridad para OAuth2
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")

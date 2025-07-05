@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, Request, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from src.api.deps import get_db
-from src.schemas import aula_schemas as aulas_schemas
-from src.controllers import aulas_controller as aulas_crud
-from src.schemas import user_schemas as user_schemas
+from src.modules.aula import aula_schemas as aulas_schemas
+from src.modules.aula import aulas_controller as aulas_crud
+from src.modules.usuarios import user_schemas as user_schemas
 from src.core.limiter import limiter
 
 router = APIRouter()

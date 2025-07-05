@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from src.models.user_model import Usuarios
-from src.schemas import user_schemas
+from src.modules.usuarios.user_model import Usuarios
+from src.modules.usuarios import user_schemas
 from fastapi import HTTPException
 from src.security import security
 

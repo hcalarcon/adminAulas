@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Date, Table
 from sqlalchemy.orm import relationship
 from src.database.baseClass import Base
-from src.models.asistencia_model import Asistencia
-from src.models.grupos_model import Grupos
+from src.modules.asistencia.asistencia_model import Asistencia
+from src.modules.grupos.grupos_model import Grupos
 
 
 class Clase(Base):

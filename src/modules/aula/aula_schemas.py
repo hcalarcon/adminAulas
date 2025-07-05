@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import date
-from src.schemas.user_schemas import Usuario
+from src.modules.usuarios.user_schemas import Usuario
 
 
 class AulaBase(BaseModel):

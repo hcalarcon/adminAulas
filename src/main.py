@@ -1,12 +1,14 @@
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 from src.core.config import settings
-from src.api.routers import user_router
-from src.api.routers import aulas_router
-from src.api.routers import clases_router
-from src.api.routers import asistencias_router
-from src.api.routers import epetcoins_router
-from src.api.routers import grupos_router
+from src.modules.usuarios import user_router
+from src.modules.aula import aulas_router
+from src.modules.clase import clases_router
+from src.modules.asistencia import asistencias_router
+from src.modules.epetcoins import epetcoins_router
+from src.modules.grupos import grupos_router
+from src.modules.evaluacion import notas_router
+from src.modules.evaluacion import tarea_router
 from src.security.middleware import decode_token_from_request
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
@@ -94,5 +96,7 @@ app.include_router(clases_router.router, prefix="/clases", tags=["Clases"])
 app.include_router(
     asistencias_router.router, prefix="/asistencias", tags=["Asistencias"]
 )
-app.include_router(epetcoins_router.router, prefix="/epetcoins", tags=["epetcoins"])
+app.include_router(epetcoins_router.router, prefix="/epetcoins", tags=["Epetcoins"])
 app.include_router(grupos_router.router, prefix="/grupos", tags=["Grupos"])
+app.include_router(tarea_router.router, prefix="/tareas", tags=["Tareas"])
+app.include_router(notas_router.router, prefix="/notas", tags=["Notas"])

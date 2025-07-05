@@ -1,8 +1,10 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from src.database.baseClass import Base
 from sqlalchemy.orm import relationship
-from src.models.aulas_model import Aula
-from src.models.epetcoin_model import TransaccionCoin, EpetCoin
+from src.modules.aula.aulas_model import Aula
+from src.modules.epetcoins.epetcoin_model import TransaccionCoin, EpetCoin
+from src.modules.evaluacion.tarea_model import Tarea
+from src.modules.usuarios.configuracion_model import Configuracion
 
 
 class Usuarios(Base):
@@ -27,3 +29,14 @@ class Usuarios(Base):
 
     coins_recibidos = relationship("TransaccionCoin", back_populates="alumno")
     monedas_creadas = relationship("EpetCoin", back_populates="profesor")
+    tareas_creadas = relationship(
+        "Tarea",
+        back_populates="creador",
+        foreign_keys="[Tarea.created_by]",
+    )
+
+    tareas_asignadas = relationship(
+        "NotaTarea", back_populates="alumno", cascade="all, delete-orphan"
+    )
+
+    configuracion = relationship("Configuracion", back_populates="user", uselist=False)

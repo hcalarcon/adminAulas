@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from src.api.deps import get_db
-from src.controllers import epetcoins_controller
-from src.schemas.epetcoins_schemas import (
+from src.modules.epetcoins import epetcoins_controller
+from src.modules.epetcoins.epetcoins_schemas import (
     EpetCoinBase,
     TransaccionCoinOut,
     TransaccionCoinBase,

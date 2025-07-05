@@ -7,7 +7,7 @@ from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from src.security import security
-from src.models.user_model import Usuarios
+from src.modules.usuarios.user_model import Usuarios
 
 
 load_dotenv()

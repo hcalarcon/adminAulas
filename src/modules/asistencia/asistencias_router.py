@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, Request, HTTPException
-from src.schemas.asistencia_schemas import (
+from src.modules.asistencia.asistencia_schemas import (
     AsistenciaCreate,
     AsistenciaOut,
     AsistenciaBase,
     AsistenciasAulaResumenOut,
     AsistenciaAlumno,
 )
-from src.controllers import asistencia_controller
+from src.modules.asistencia import asistencia_controller
 from sqlalchemy.orm import Session
 from src.api.deps import get_db
 from typing import List

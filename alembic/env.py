@@ -1,17 +1,20 @@
 from logging.config import fileConfig
-from sqlalchemy import engine_from_config
+from sqlalchemy import engine_from_config, create_engine
 from sqlalchemy import pool
 from alembic import context
 import os
 from dotenv import load_dotenv
 from src.database.baseClass import Base
 
-from src.models.aulas_model import Aula
-from src.models.asistencia_model import Asistencia
-from src.models.clase_model import Clase
-from src.models.epetcoin_model import TransaccionCoin, EpetCoin
-from src.models.user_model import Usuarios
-from src.models.grupos_model import Grupos
+from src.modules.aula.aulas_model import Aula
+from src.modules.asistencia.asistencia_model import Asistencia
+from src.modules.clase.clase_model import Clase
+from src.modules.epetcoins.epetcoin_model import TransaccionCoin, EpetCoin
+from src.modules.usuarios.user_model import Usuarios
+from modules.grupos.grupos_model import Grupos
+from src.modules.evaluacion.nota_model import NotaTarea
+from modules.evaluacion.criterios_model import NotaActitudinal
+from modules.evaluacion.tarea_model import Tarea
 
 
 load_dotenv()
@@ -27,6 +30,7 @@ target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
+    print("Conectando a:", os.environ.get("DATABASE_URL"))
 
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
@@ -42,9 +46,14 @@ def run_migrations_offline() -> None:
 
 def run_migrations_online() -> None:
 
-    connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
-        prefix="sqlalchemy.",
+    # connectable = engine_from_config(
+    #     config.get_section(config.config_ini_section, {}),
+    #     prefix="sqlalchemy.",
+    #     poolclass=pool.NullPool,
+    # )
+
+    connectable = create_engine(
+        os.environ.get("DATABASE_URL"),
         poolclass=pool.NullPool,
     )
 
