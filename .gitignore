@@ -22,8 +22,11 @@ __pycache__/
 *.log
 
 # Archivos generados por alembic
+alembic/*
+!alembic/versions/
 alembic/versions/*.py
 alembic/versions/__pycache__/
+
 
 # VSCode o editores
 .vscode/

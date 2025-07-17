@@ -2,14 +2,16 @@ from fastapi import APIRouter, Depends, Request, HTTPException
 from sqlalchemy.orm import Session
 from src.api.deps import get_db
 from typing import List
-from src.modules.evaluacion.tarea_schemas import TareaCreate, TareaOut, TareaUpdate
-from src.modules.evaluacion import tarea_controller
+from src.modules.tarea.tarea_schemas import TareaCreate, TareaOut, TareaUpdate
+from src.modules.tarea import tarea_controller
 from src.core.limiter import limiter
 
 router = APIRouter()
 
 
-@router.post("/", response_model=TareaOut)
+@router.post(
+    "/",
+)
 @limiter.limit("10/minute")
 def crear_tarea(
     request: Request,
@@ -29,6 +31,11 @@ def listar_tareas_por_aula(
     db: Session = Depends(get_db),
 ):
     return tarea_controller.listar_tareas_por_aula(db, aula_id)
+
+
+@router.get("/me", response_model=list[TareaOut])
+def tareas_por_usuario(request: Request, db: Session = Depends(get_db)):
+    return tarea_controller.listar_tareas_por_usuario(db, request.state.user)
 
 
 @router.get("/{tarea_id}", response_model=TareaOut)

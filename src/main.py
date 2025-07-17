@@ -7,12 +7,14 @@ from src.modules.clase import clases_router
 from src.modules.asistencia import asistencias_router
 from src.modules.epetcoins import epetcoins_router
 from src.modules.grupos import grupos_router
-from src.modules.evaluacion import notas_router
-from src.modules.evaluacion import tarea_router
+from src.modules.nota import notas_router
+from src.modules.tarea import tarea_router
+from src.modules.evaluacion import router as evaluacion_router
 from src.security.middleware import decode_token_from_request
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+
 
 from src.core.limiter import limiter
 
@@ -100,3 +102,4 @@ app.include_router(epetcoins_router.router, prefix="/epetcoins", tags=["Epetcoin
 app.include_router(grupos_router.router, prefix="/grupos", tags=["Grupos"])
 app.include_router(tarea_router.router, prefix="/tareas", tags=["Tareas"])
 app.include_router(notas_router.router, prefix="/notas", tags=["Notas"])
+app.include_router(evaluacion_router.router, prefix="/evaluacion", tags=["Evaluacion"])

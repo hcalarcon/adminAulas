@@ -1,10 +1,10 @@
 from src.database.baseClass import Base
-from modules.epetcoins.epetcoin_model import Coin, EpetCoin
-from modules.usuarios.user_model import Usuarios
-from modules.aula.aulas_model import Aula
-from modules.asistencia.asistencia_model import Asistencia
-from api.modules.clase.clase_model import Clase
-from modules.grupos.grupos_model import Grupos
-from modules.evaluacion.criterios_model import CriterioEvaluacion
-from modules.evaluacion.nota_model import NotaTarea
-from modules.evaluacion.tarea_model import Tarea
+from src.modules.epetcoins.epetcoin_model import Coin, EpetCoin
+from src.modules.usuarios.user_model import Usuarios
+from src.modules.aula.aulas_model import Aula
+from src.modules.asistencia.asistencia_model import Asistencia
+from src.modules.clase.clase_model import Clase
+from src.modules.grupos.grupos_model import Grupos
+from modules.evaluacion.model import CriterioEvaluacion
+from src.modules.nota.nota_model import NotaTarea
+from src.modules.tarea.tarea_model import Tarea

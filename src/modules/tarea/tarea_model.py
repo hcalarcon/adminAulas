@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Text, Date, Numeric
 from src.database.baseClass import Base
 from sqlalchemy.orm import relationship
 from src.modules.aula.aulas_model import Aula
-from src.modules.evaluacion.nota_model import NotaTarea
+from src.modules.nota.nota_model import NotaTarea
 
 
 class Tarea(Base):

@@ -3,7 +3,7 @@ from src.database.baseClass import Base
 from sqlalchemy.orm import relationship
 from src.modules.aula.aulas_model import Aula
 from src.modules.epetcoins.epetcoin_model import TransaccionCoin, EpetCoin
-from src.modules.evaluacion.tarea_model import Tarea
+from src.modules.tarea.tarea_model import Tarea
 from src.modules.usuarios.configuracion_model import Configuracion
 
 

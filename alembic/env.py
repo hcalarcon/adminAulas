@@ -11,10 +11,11 @@ from src.modules.asistencia.asistencia_model import Asistencia
 from src.modules.clase.clase_model import Clase
 from src.modules.epetcoins.epetcoin_model import TransaccionCoin, EpetCoin
 from src.modules.usuarios.user_model import Usuarios
-from modules.grupos.grupos_model import Grupos
-from src.modules.evaluacion.nota_model import NotaTarea
-from modules.evaluacion.criterios_model import NotaActitudinal
-from modules.evaluacion.tarea_model import Tarea
+from src.modules.grupos.grupos_model import Grupos
+from src.modules.nota.nota_model import NotaTarea
+from modules.evaluacion.model import CriterioEvaluacion
+from src.modules.tarea.tarea_model import Tarea
+from src.modules.usuarios.configuracion_model import Configuracion
 
 
 load_dotenv()

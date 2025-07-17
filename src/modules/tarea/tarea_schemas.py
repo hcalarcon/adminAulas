@@ -29,6 +29,8 @@ class TareaUpdate(BaseModel):
 
 class TareaOut(TareaBase):
     id: int
+    cantidad_alumnos: Optional[int] = None
+    entregados: Optional[int] = None
 
     class Config:
         from_attributes = True

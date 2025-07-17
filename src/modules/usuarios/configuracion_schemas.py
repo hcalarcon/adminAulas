@@ -7,6 +7,7 @@ class ConfiguracionUsuarioBase(BaseModel):
     dark_mode: bool = False
     color_primario: Optional[str] = "#E814F0"
     foto_perfil_url: Optional[str] = None
+    escala_evaluacion: Optional[int] = 100
 
 
 class ConfiguracionUsuarioCreate(ConfiguracionUsuarioBase):

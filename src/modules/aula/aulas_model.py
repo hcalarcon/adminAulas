@@ -35,3 +35,6 @@ class Aula(Base):
     transacciones_coin = relationship("TransaccionCoin", back_populates="aula")
     grupos = relationship("Grupos", secondary="grupos_aulas", back_populates="aulas")
     tareas = relationship("Tarea", back_populates="aula")
+    criterios = relationship(
+        "CriterioEvaluacion", back_populates="aula", cascade="all, delete-orphan"
+    )
