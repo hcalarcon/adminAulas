@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 from typing import List
 from src.api.deps import get_db
 from src.modules.usuarios import user_controller as userCrud
-from src.modules.usuarios import user_schemas as user_schemas
-from src.security.auth import login
+from src.modules.usuarios import user_schemas
+from src.security.auth import login, refresh_token_controller
 from src.core.limiter import limiter
 
 router = APIRouter()
@@ -55,3 +55,9 @@ def login_user(
     db: Session = Depends(get_db),
 ):
     return login(db, email=login_data.email, password=login_data.password)
+
+
+@router.post("/refresh")
+def refresh_token(data: user_schemas.RefreshRequest):
+
+    return refresh_token_controller(data.refresh_token)

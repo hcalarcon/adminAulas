@@ -143,8 +143,7 @@ def calcular_nota_final_post(
     request: Request,
     db: Session = Depends(get_db),
 ):
-    if not request.state.user.is_teacher:
-        raise HTTPException(status_code=403, detail="No autorizado")
+
     return nota_controller.calcular_nota_final(
         db, alumno_id, aula_id, data.porcentaje_asistencia
     )

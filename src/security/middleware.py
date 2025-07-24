@@ -48,9 +48,3 @@ async def decode_token_from_request(request: Request):
             detail="Token expirado",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    except jwt.JWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token inválido",
-            headers={"WWW-Authenticate": "Bearer"},
-        )

@@ -56,6 +56,7 @@ class UserAuth(BaseModel):
 class LoginOut(BaseModel):
     user: Usuario
     access_token: str
+    refresh_token: str
 
     class Config:
         from_attributes = True
@@ -73,3 +74,7 @@ class UsuarioConGrupo(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class RefreshRequest(BaseModel):
+    refresh_token: str

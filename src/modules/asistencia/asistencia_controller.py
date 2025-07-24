@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import or_, select
 from src.modules.asistencia.asistencia_schemas import (
     AsistenciaCreate,
     AsistenciaPorAula,
@@ -7,6 +8,7 @@ from src.modules.asistencia.asistencia_model import Asistencia
 from src.modules.clase.clase_model import Clase
 from src.modules.aula.aulas_model import Aula
 from src.modules.usuarios.user_model import Usuarios as Alumno
+from src.modules.grupos.grupos_model import Grupos
 from typing import List, Dict, Any
 from fastapi import HTTPException
 
@@ -81,15 +83,28 @@ def actualizar_asistencia(db: Session, asistencia_data: AsistenciaCreate):
 
 
 def obtener_asistencias_por_alumno(db: Session, alumno_id: int):
-    # 1. Obtener aulas en las que está inscripto el alumno
-    aulas = (
-        db.query(Aula)
-        .join(Aula.alumnos)  # relación many-to-many desde Aula hacia Alumno
-        .outerjoin(Clase, Aula.id == Clase.aula_id)
-        .filter(Alumno.id == alumno_id)
-        .group_by(Aula.id)
-        .all()
+    # Aulas directas
+    subq_directas = (
+        db.query(Aula.id).join(Aula.alumnos).filter(Alumno.id == alumno_id).subquery()
     )
+
+    # Aulas por grupo
+    subq_grupo = (
+        db.query(Aula.id)
+        .join(Aula.grupos)
+        .join(Grupos.alumnos)
+        .filter(Alumno.id == alumno_id)
+        .subquery()
+    )
+
+    aula_ids = db.query(Aula.id).filter(
+        or_(
+            Aula.id.in_(select(subq_directas.c.id)),
+            Aula.id.in_(select(subq_grupo.c.id)),
+        )
+    )
+
+    aulas = db.query(Aula).filter(Aula.id.in_(aula_ids)).all()
 
     resultado = []
 
@@ -119,7 +134,7 @@ def obtener_asistencias_por_alumno(db: Session, alumno_id: int):
                 {
                     "id": clase.id,
                     "fecha": clase.fecha,
-                    "clase_nombre": clase.tema,  # o clase.aula.nombre
+                    "clase_nombre": clase.tema,
                     "presente": asistencia.presente,
                     "justificado": asistencia.justificado,
                 }
@@ -138,6 +153,63 @@ def obtener_asistencias_por_alumno(db: Session, alumno_id: int):
         )
 
     return resultado
+    # # 1. Obtener aulas en las que está inscripto el alumno
+    # aulas = (
+    #     db.query(Aula)
+    #     .join(Aula.alumnos)  # relación many-to-many desde Aula hacia Alumno
+    #     .outerjoin(Clase, Aula.id == Clase.aula_id)
+    #     .filter(Alumno.id == alumno_id)
+    #     .group_by(Aula.id)
+    #     .all()
+    # )
+
+    # resultado = []
+
+    # for aula in aulas:
+    #     clases = (
+    #         db.query(Clase).filter(Clase.aula_id == aula.id).order_by(Clase.fecha).all()
+    #     )
+    #     clase_ids = [clase.id for clase in clases]
+
+    #     if not clase_ids:
+    #         continue
+
+    #     asistencias = (
+    #         db.query(Asistencia, Clase)
+    #         .join(Clase, Asistencia.clase_id == Clase.id)
+    #         .options(joinedload(Asistencia.clase).joinedload(Clase.aula))
+    #         .filter(Asistencia.alumno_id == alumno_id, Clase.id.in_(clase_ids))
+    #         .order_by(Clase.fecha)
+    #         .all()
+    #     )
+
+    #     detalle = []
+    #     asistencias_solas = []
+
+    #     for asistencia, clase in asistencias:
+    #         detalle.append(
+    #             {
+    #                 "id": clase.id,
+    #                 "fecha": clase.fecha,
+    #                 "clase_nombre": clase.tema,  # o clase.aula.nombre
+    #                 "presente": asistencia.presente,
+    #                 "justificado": asistencia.justificado,
+    #             }
+    #         )
+    #         asistencias_solas.append(asistencia)
+
+    #     resumen = calcular_asistencia(asistencias_solas)
+
+    #     resultado.append(
+    #         {
+    #             "aula_id": aula.id,
+    #             "materia": aula.nombre,
+    #             "porcentaje_asistencia": resumen["porcentaje"],
+    #             "asistencias": detalle,
+    #         }
+    #     )
+
+    # return resultado
 
 
 def obtener_asistencias_por_alumno_y_aula(db: Session, alumno_id: int, aula_id: int):

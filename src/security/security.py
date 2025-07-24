@@ -20,7 +20,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
             detail="El hash de la contraseña no es reconocible o está dañado.",
         )
     except Exception as e:
-        print(f"[verify_password] Error al verificar contraseña: {e}")
+
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Error interno al verificar la contraseña.",

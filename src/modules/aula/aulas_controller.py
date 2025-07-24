@@ -5,7 +5,7 @@ from src.modules.usuarios import user_schemas
 from fastapi import HTTPException
 from src.utility.exist import existe
 from src.modules.usuarios.user_model import Usuarios
-from sqlalchemy import func, case, or_
+from sqlalchemy import func, case, or_, select
 from src.modules.clase.clase_model import Clase
 from src.modules.grupos.grupos_model import Grupos
 
@@ -38,7 +38,12 @@ def get_aulas_por_alumno(db: Session, alumno_id: int):
             ),
         )
         .outerjoin(Clase, Aula.id == Clase.aula_id)
-        .filter(or_(Aula.id.in_(subq_directas), Aula.id.in_(subq_grupo)))
+        .filter(
+            or_(
+                Aula.id.in_(select(subq_directas.c.id)),
+                Aula.id.in_(select(subq_grupo.c.id)),
+            )
+        )
         .group_by(Aula.id)
         .all()
     )

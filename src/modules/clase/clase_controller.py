@@ -52,16 +52,12 @@ def obtener_clases_por_aula(db: Session, aula_id: int):
 
 
 def obtener_clases_para_alumno(db: Session, alumno_id: int, aula_id: int):
-    print(alumno_id)
+
     alumno = db.query(Usuarios).filter(Usuarios.id == alumno_id).first()
     if not alumno:
         raise HTTPException(status_code=404, detail="Alumno no encontrado")
 
     grupo_id = alumno.grupo_id
-
-    # Verificamos que el alumno esté inscripto en el aula
-    # if aula_id not in [a.id for a in alumno.aulas_inscripto]:
-    #     raise HTTPException(status_code=403, detail="No estás inscripto en esta aula")
 
     clases = (
         db.query(Clase)
