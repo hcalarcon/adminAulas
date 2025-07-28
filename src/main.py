@@ -35,6 +35,7 @@ origins = [
     "https://admin-aulas-web.vercel.app",  # Si tienes versión desplegada en la web
     "http://localhost:8081",
     "https://adminaulas--u4eaup1doe.expo.app",
+    "https://adminaulas.expo.app",
 ]
 
 app.add_middleware(
